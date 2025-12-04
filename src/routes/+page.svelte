@@ -5,7 +5,6 @@
 	import Swal from 'sweetalert2';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { API_URL } from '../lib/config'; 
 
 	onMount(() => {
 		const ls = localStorage.getItem('token');
@@ -14,23 +13,27 @@
 		}
 	});
 
-	function login() {
+	async function login() {
 		const form = document.getElementById('loginForm');
-		axios.post(`${API_URL}login/login.php`, new FormData(form))
-			.then((res) => {
-				if (res.data.res === 'success') {
-					localStorage.setItem('token', JSON.stringify(res.data.token));
-					goto('/Inicio');
-				} else {
-					localStorage.removeItem('token');
-					localStorage.clear();
-					Swal.fire('Error', 'Acceso fallido', 'error');
-				}
-			})
-			.catch(err => {
-				console.error('Error en login:', err);
-				Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+		try {
+			const res = await axios.post('/api/proxy', {
+				url: 'login/login.php',
+				method: 'POST',
+				data: Object.fromEntries(new FormData(form))
 			});
+
+			if (res.data.res === 'success') {
+				localStorage.setItem('token', JSON.stringify(res.data.token));
+				goto('/Inicio');
+			} else {
+				localStorage.removeItem('token');
+				localStorage.clear();
+				Swal.fire('Error', 'Acceso fallido', 'error');
+			}
+		} catch (err) {
+			console.error('Error en login:', err);
+			Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+		}
 	}
 </script>
 

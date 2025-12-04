@@ -6,7 +6,6 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import Menu from '../../../componentes/Menu.svelte';
-	import { API_URL } from '../../../lib/config'; 
 
 	export let params = {};
 	let id = params.id;
@@ -17,81 +16,75 @@
 		getPost();
 	});
 
-
-	function getPost() {
-		axios.get(`${API_URL}posts/post.php?id=${id}`)
-			.then((res) => {
-				post = res.data;
-			})
-			.catch((err) => {
-				console.error('Error al obtener el post:', err);
-				Swal.fire('Error', 'No se pudo cargar el post', 'error');
+	async function getPost() {
+		try {
+			const res = await axios.post('/api/proxy', {
+				url: 'posts/post.php',
+				method: 'GET',
+				data: { id }
 			});
+			post = res.data;
+		} catch (err) {
+			console.error('Error al obtener el post:', err);
+			Swal.fire('Error', 'No se pudo cargar el post', 'error');
+		}
 	}
-
 
 	function validarFormulario() {
 		const titulo = document.getElementsByName('titulo')[0].value.trim();
 		const contenido = document.getElementsByName('post')[0].value.trim();
 
-		if (titulo === '') {
-			Swal.fire('Error', 'El título no puede estar vacío', 'error');
-			return false;
-		}
-
-		if (contenido === '') {
-			Swal.fire('Error', 'El post no puede estar vacío', 'error');
-			return false;
-		}
-
-		if (contenido.length > 300) {
-			Swal.fire('Error', 'El post supera los 300 caracteres', 'error');
-			return false;
-		}
-
+		if (!titulo || !contenido || contenido.length > 300) return false;
 		return true;
 	}
 
-
-	function editar() {
-		if (!validarFormulario()) return;
+	async function editar() {
+		if (!validarFormulario()) {
+			Swal.fire('Error', 'Datos inválidos', 'error');
+			return;
+		}
 
 		const form = document.getElementById('formEditar');
-		axios.post(`${API_URL}posts/editarPost.php`, new FormData(form))
-			.then((res) => {
-				if (res.data === 'success') {
-					Swal.fire('Muy bien', 'Tu post fue editado', 'success');
-					goto('/');
-				} else {
-					Swal.fire('Error', 'Tu post no fue editado', 'error');
-				}
-			})
-			.catch((err) => {
-				console.error('Error al editar:', err);
-				Swal.fire('Error', 'No se pudo editar el post', 'error');
+		try {
+			const res = await axios.post('/api/proxy', {
+				url: 'posts/editarPost.php',
+				method: 'POST',
+				data: Object.fromEntries(new FormData(form))
 			});
+			if (res.data === 'success') {
+				Swal.fire('Muy bien', 'Tu post fue editado', 'success');
+				goto('/');
+			} else {
+				Swal.fire('Error', 'Tu post no fue editado', 'error');
+			}
+		} catch (err) {
+			console.error('Error al editar:', err);
+			Swal.fire('Error', 'No se pudo editar el post', 'error');
+		}
 	}
 
-
-	function eliminar() {
-		Swal.fire({
+	async function eliminar() {
+		const result = await Swal.fire({
 			title: '¿Estás seguro?',
 			text: 'No podrás deshacer esta acción.',
 			icon: 'warning',
 			showCancelButton: true
-		}).then((result) => {
-			if (result.isConfirmed) {
-				axios.post(`${API_URL}posts/eliminar.php?id=${id}`)
-					.then(() => {
-						Swal.fire('Borrado', 'Tu post ha sido eliminado', 'success');
-						goto('/');
-					})
-					.catch((err) => {
-						console.error('Error al eliminar:', err);
-						Swal.fire('Error', 'No se pudo eliminar el post', 'error');
-					});
-			}
 		});
+
+		if (result.isConfirmed) {
+			try {
+				await axios.post('/api/proxy', {
+					url: `posts/eliminar.php`,
+					method: 'POST',
+					data: { id }
+				});
+				Swal.fire('Borrado', 'Tu post ha sido eliminado', 'success');
+				goto('/');
+			} catch (err) {
+				console.error('Error al eliminar:', err);
+				Swal.fire('Error', 'No se pudo eliminar el post', 'error');
+			}
+		}
 	}
 </script>
 
@@ -108,6 +101,6 @@
 		<button class="btn blue" type="submit">Editar post</button>
 	</form>
 
-	<hr />
+	<hr/>
 	<button class="btn red" on:click={eliminar}>Eliminar Post</button>
 </div>
