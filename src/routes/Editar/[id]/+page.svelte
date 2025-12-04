@@ -16,6 +16,7 @@
 		getPost();
 	});
 
+	// Cargar el post usando el proxy
 	async function getPost() {
 		try {
 			const res = await axios.post('/api/proxy', {
@@ -30,19 +31,32 @@
 		}
 	}
 
+	// Validación simple del formulario
 	function validarFormulario() {
 		const titulo = document.getElementsByName('titulo')[0].value.trim();
 		const contenido = document.getElementsByName('post')[0].value.trim();
 
-		if (!titulo || !contenido || contenido.length > 300) return false;
+		if (!titulo) {
+			Swal.fire('Error', 'El título no puede estar vacío', 'error');
+			return false;
+		}
+
+		if (!contenido) {
+			Swal.fire('Error', 'El post no puede estar vacío', 'error');
+			return false;
+		}
+
+		if (contenido.length > 300) {
+			Swal.fire('Error', 'El post supera los 300 caracteres', 'error');
+			return false;
+		}
+
 		return true;
 	}
 
+	// Editar el post
 	async function editar() {
-		if (!validarFormulario()) {
-			Swal.fire('Error', 'Datos inválidos', 'error');
-			return;
-		}
+		if (!validarFormulario()) return;
 
 		const form = document.getElementById('formEditar');
 		try {
@@ -63,6 +77,7 @@
 		}
 	}
 
+	// Eliminar el post
 	async function eliminar() {
 		const result = await Swal.fire({
 			title: '¿Estás seguro?',
@@ -74,7 +89,7 @@
 		if (result.isConfirmed) {
 			try {
 				await axios.post('/api/proxy', {
-					url: `posts/eliminar.php`,
+					url: 'posts/eliminar.php',
 					method: 'POST',
 					data: { id }
 				});

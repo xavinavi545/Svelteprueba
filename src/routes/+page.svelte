@@ -7,14 +7,15 @@
 	import { goto } from '$app/navigation';
 
 	onMount(() => {
-		const ls = localStorage.getItem('token');
-		if (ls != null) {
+		const token = localStorage.getItem('token');
+		if (token) {
 			goto('/Inicio');
 		}
 	});
 
 	async function login() {
 		const form = document.getElementById('loginForm');
+
 		try {
 			const res = await axios.post('/api/proxy', {
 				url: 'login/login.php',
@@ -27,7 +28,6 @@
 				goto('/Inicio');
 			} else {
 				localStorage.removeItem('token');
-				localStorage.clear();
 				Swal.fire('Error', 'Acceso fallido', 'error');
 			}
 		} catch (err) {

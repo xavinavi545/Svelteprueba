@@ -40,7 +40,10 @@
 	async function cargarPosts() {
 		cargando = true;
 		try {
-			const res = await axios.post('/api/proxy', { url: 'posts/posts.php', method: 'GET' });
+			const res = await axios.post('/api/proxy', {
+				url: 'posts/posts.php',
+				method: 'GET'
+			});
 			posts = res.data;
 		} catch (err) {
 			console.error("Error al cargar posts:", err);

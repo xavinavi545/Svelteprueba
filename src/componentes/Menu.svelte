@@ -2,24 +2,28 @@
     import axios from "axios";
     import { token } from "../store";
     import { goto } from "$app/navigation";
-    import { API_URL } from "../lib/config";
 
-    function salir() {
+    async function salir() {
         const tokenphp = JSON.parse(localStorage.getItem("token"));
-        
-        
-        axios.post(`${API_URL}login/salir.php?token=${tokenphp}`)
-        .then(res => {
+
+        try {
+            const res = await axios.post('/api/proxy', {
+                url: 'login/salir.php',
+                method: 'POST',
+                data: { token: tokenphp }
+            });
+
             if (res.data === "success") {
                 localStorage.removeItem("token");
                 localStorage.removeItem("user");
                 localStorage.removeItem("foto");
                 goto("/");
             }
-        });
+        } catch (err) {
+            console.error("Error al salir:", err);
+        }
     }
 </script>
-
 
 <nav class="red">
     <div class="nav-wrapper">

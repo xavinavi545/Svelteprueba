@@ -5,6 +5,7 @@
 	import Menu from "../../componentes/Menu.svelte";
 	import Swal from "sweetalert2";
 	import { goto } from "$app/navigation";
+	import { onMount } from "svelte";
 
 	let user = "";
 	let fotoUsuario = "";
@@ -28,6 +29,7 @@
 			return;
 		}
 
+		// Usamos FormData si hay archivo
 		const formData = new FormData();
 		formData.append("usuario", user);
 		formData.append("fotoUser", fotoUsuario);
@@ -35,10 +37,15 @@
 		formData.append("post", contenido);
 		if (foto) formData.append("foto", foto);
 
-		const data = Object.fromEntries(formData.entries());
+		// Convertimos FormData a objeto simple si no hay archivo
+		const data = foto ? formData : Object.fromEntries(formData.entries());
 
 		try {
-			const res = await axios.post('/api/proxy', { url: 'posts/altaPost.php', method: 'POST', data });
+			const res = await axios.post('/api/proxy', {
+				url: 'posts/altaPost.php',
+				method: 'POST',
+				data
+			});
 			if (res.data === 'success') {
 				Swal.fire("Muy bien", "Tu post fue guardado", "success");
 				goto("/");

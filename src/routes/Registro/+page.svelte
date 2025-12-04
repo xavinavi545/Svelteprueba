@@ -12,50 +12,51 @@
 	let show = false;
 
 	function registrarse() {
-		if (pass === pass2) {
-			const form = document.getElementById('registroForm');
-			axios.post('/api/proxy', {
-				url: 'login/registro.php',
-				method: 'POST',
-				data: Object.fromEntries(new FormData(form))
-			})
-			.then(res => {
-				if (res.data === 'success') {
-					Swal.fire('Correcto', 'Registrado correctamente', 'success');
-					goto('/');
-				} else {
-					Swal.fire('Error', 'Falló el registro', 'error');
-				}
-			})
-			.catch(err => {
-				console.error('Error al registrar:', err);
-				Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
-			});
-		} else {
+		if (pass !== pass2) {
 			Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
+			return;
 		}
+
+		const form = document.getElementById('registroForm');
+
+		axios.post('/api/proxy', {
+			url: 'login/registro.php',
+			method: 'POST',
+			data: Object.fromEntries(new FormData(form))
+		})
+		.then(res => {
+			if (res.data === 'success') {
+				Swal.fire('Correcto', 'Registrado correctamente', 'success');
+				goto('/');
+			} else {
+				Swal.fire('Error', 'Falló el registro', 'error');
+			}
+		})
+		.catch(err => {
+			console.error('Error al registrar:', err);
+			Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+		});
 	}
 
 	function validarEmail() {
-		if (email.trim() !== '') {
-			const datosEmail = { email };
-			axios.post('/api/proxy', {
-				url: 'login/validarEmail.php',
-				method: 'POST',
-				data: datosEmail
-			})
-			.then(res => {
-				if (res.data === 'success') {
-					show = true;
-				} else {
-					show = false;
-					Swal.fire('Error', 'El correo ya existe', 'error');
-				}
-			})
-			.catch(err => {
-				console.error('Error al validar email:', err);
-			});
-		}
+		if (email.trim() === '') return;
+
+		axios.post('/api/proxy', {
+			url: 'login/validarEmail.php',
+			method: 'POST',
+			data: { email }
+		})
+		.then(res => {
+			if (res.data === 'success') {
+				show = true;
+			} else {
+				show = false;
+				Swal.fire('Error', 'El correo ya existe', 'error');
+			}
+		})
+		.catch(err => {
+			console.error('Error al validar email:', err);
+		});
 	}
 </script>
 
@@ -70,8 +71,8 @@
 			<label for="email">Email</label>
 		</div>
 
-		<InputCustom type="password" id="pass" name="pass" label="Password" icon="https" value={pass} on:input={(e)=>pass=e.target.value}/>
-		<InputCustom type="password" id="pass2" name="pass2" label="Verificación de Password" icon="https" value={pass2} on:input={(e)=>pass2=e.target.value}/>
+		<InputCustom type="password" id="pass" name="pass" label="Password" icon="https" bind:value={pass}/>
+		<InputCustom type="password" id="pass2" name="pass2" label="Verificación de Password" icon="https" bind:value={pass2}/>
 		<InputCustom id="usuario" name="usuario" label="Nombre de usuario" icon="account_circle"/>
 		<File />
 
