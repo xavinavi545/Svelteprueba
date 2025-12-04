@@ -2,11 +2,13 @@
     import axios from "axios";
     import { token } from "../store";
     import { goto } from "$app/navigation";
+    import { API_URL } from "../lib/config";
 
     function salir() {
         const tokenphp = JSON.parse(localStorage.getItem("token"));
         
-        axios.post("http://localhost/sveltephp/login/salir.php?token=" + tokenphp)
+        
+        axios.post(`${API_URL}login/salir.php?token=${tokenphp}`)
         .then(res => {
             if (res.data === "success") {
                 localStorage.removeItem("token");
@@ -17,6 +19,7 @@
         });
     }
 </script>
+
 
 <nav class="red">
     <div class="nav-wrapper">

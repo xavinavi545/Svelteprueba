@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import Menu from "../../componentes/Menu.svelte";
     import sesion from "../../sesion";
+    import { API_URL } from '../../lib/config'; 
 
     let usuario = "";
     let fotoUsuario = "";
@@ -22,21 +23,30 @@
     function cargarUsuario() {
         const token = JSON.parse(localStorage.getItem("token"));
 
-        axios.post("http://localhost/sveltephp/posts/user.php?token=" + token)
+        axios.post(`${API_URL}posts/user.php?token=${token}`)
         .then(res => {
             usuario = res.data.user;
             fotoUsuario = res.data.foto;
 
             localStorage.setItem("user", JSON.stringify(usuario));
             localStorage.setItem("foto", JSON.stringify(fotoUsuario));
+        })
+        .catch(err => {
+            console.error("Error al cargar usuario:", err);
         });
     }
 
     async function cargarPosts() {
         cargando = true;
-        const res = await fetch("http://localhost/sveltephp/posts/posts.php");
-        posts = await res.json();
-        cargando = false;
+        try {
+            const res = await fetch(`${API_URL}posts/posts.php`);
+            posts = await res.json();
+        } catch (err) {
+            console.error("Error al cargar posts:", err);
+            posts = [];
+        } finally {
+            cargando = false;
+        }
     }
 
     function filtrarPosts() {

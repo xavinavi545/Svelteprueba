@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import Menu from '../../../componentes/Menu.svelte';
+	import { API_URL } from '../../../lib/config'; 
 
 	export let params = {};
 	let id = params.id;
@@ -16,13 +17,19 @@
 		getPost();
 	});
 
+
 	function getPost() {
-		axios.get('http://localhost/sveltephp/posts/post.php?id=' + id).then((res) => {
-			post = res.data;
-		});
+		axios.get(`${API_URL}posts/post.php?id=${id}`)
+			.then((res) => {
+				post = res.data;
+			})
+			.catch((err) => {
+				console.error('Error al obtener el post:', err);
+				Swal.fire('Error', 'No se pudo cargar el post', 'error');
+			});
 	}
 
-	// VALIDACIONES
+
 	function validarFormulario() {
 		const titulo = document.getElementsByName('titulo')[0].value.trim();
 		const contenido = document.getElementsByName('post')[0].value.trim();
@@ -45,21 +52,26 @@
 		return true;
 	}
 
+
 	function editar() {
 		if (!validarFormulario()) return;
 
 		const form = document.getElementById('formEditar');
-		axios
-			.post('http://localhost/sveltephp/posts/editarPost.php', new FormData(form))
+		axios.post(`${API_URL}posts/editarPost.php`, new FormData(form))
 			.then((res) => {
-				if (res.data == 'success') {
+				if (res.data === 'success') {
 					Swal.fire('Muy bien', 'Tu post fue editado', 'success');
 					goto('/');
 				} else {
 					Swal.fire('Error', 'Tu post no fue editado', 'error');
 				}
+			})
+			.catch((err) => {
+				console.error('Error al editar:', err);
+				Swal.fire('Error', 'No se pudo editar el post', 'error');
 			});
 	}
+
 
 	function eliminar() {
 		Swal.fire({
@@ -68,11 +80,16 @@
 			icon: 'warning',
 			showCancelButton: true
 		}).then((result) => {
-			if (result.value) {
-				axios.post('http://localhost/sveltephp/posts/eliminar.php?id=' + id).then(() => {
-					Swal.fire('Borrado', 'Tu post ha sido eliminado', 'success');
-					goto('/');
-				});
+			if (result.isConfirmed) {
+				axios.post(`${API_URL}posts/eliminar.php?id=${id}`)
+					.then(() => {
+						Swal.fire('Borrado', 'Tu post ha sido eliminado', 'success');
+						goto('/');
+					})
+					.catch((err) => {
+						console.error('Error al eliminar:', err);
+						Swal.fire('Error', 'No se pudo eliminar el post', 'error');
+					});
 			}
 		});
 	}

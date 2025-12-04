@@ -5,11 +5,7 @@
 	import Swal from 'sweetalert2';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-
-/* 	const ls = localStorage.getItem('token');
-	$: if (ls != null) {
-		goto('/Inicio');
-	} */
+	import { API_URL } from '../lib/config'; 
 
 	onMount(() => {
 		const ls = localStorage.getItem('token');
@@ -20,16 +16,21 @@
 
 	function login() {
 		const form = document.getElementById('loginForm');
-		axios.post('http://localhost/sveltephp/login/login.php', new FormData(form)).then((res) => {
-			if (res.data.res === 'success') {
-				localStorage.setItem('token', JSON.stringify(res.data.token));
-				goto('/Inicio');
-			} else {
-				localStorage.removeItem('token');
-				localStorage.clear();
-				Swal.fire('Error', 'Acceso fallido', 'error');
-			}
-		});
+		axios.post(`${API_URL}login/login.php`, new FormData(form))
+			.then((res) => {
+				if (res.data.res === 'success') {
+					localStorage.setItem('token', JSON.stringify(res.data.token));
+					goto('/Inicio');
+				} else {
+					localStorage.removeItem('token');
+					localStorage.clear();
+					Swal.fire('Error', 'Acceso fallido', 'error');
+				}
+			})
+			.catch(err => {
+				console.error('Error en login:', err);
+				Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+			});
 	}
 </script>
 
