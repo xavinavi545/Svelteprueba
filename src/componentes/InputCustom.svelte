@@ -1,0 +1,30 @@
+<script>
+    export let value = "";
+    export let type = "text";
+    export let name = "";
+    export let icon = "";
+    export let id = "";
+    export let label = "";
+    export let tipo = "normal"; // normal | editar
+</script>
+
+<div class="input-field">
+    {#if tipo === "normal"}
+        <i class="material-icons prefix">{icon}</i>
+        <input 
+            type={type} 
+            name={name} 
+            id={id}
+            bind:value
+        />
+        <label for={id}>{label}</label>
+
+    {:else if tipo === "editar"}
+        <i class="material-icons prefix">{icon}</i>
+        <input 
+            type={type} 
+            name={name}
+            bind:value
+        />
+    {/if}
+</div>
