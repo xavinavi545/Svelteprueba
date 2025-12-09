@@ -24,39 +24,46 @@
 	}
 
 	async function guardar() {
-		if (titulo.trim() === "" || contenido.trim() === "") {
-			Swal.fire("Error", "El título y contenido no pueden estar vacíos", "error");
-			return;
-		}
-
-		// Usamos FormData si hay archivo
-		const formData = new FormData();
-		formData.append("usuario", user);
-		formData.append("fotoUser", fotoUsuario);
-		formData.append("titulo", titulo);
-		formData.append("post", contenido);
-		if (foto) formData.append("foto", foto);
-
-		// Convertimos FormData a objeto simple si no hay archivo
-		const data = foto ? formData : Object.fromEntries(formData.entries());
-
-		try {
-			const res = await axios.post('/api/proxy', {
-				url: 'posts/altaPost.php',
-				method: 'POST',
-				data
-			});
-			if (res.data === 'success') {
-				Swal.fire("Muy bien", "Tu post fue guardado", "success");
-				goto("/");
-			} else {
-				Swal.fire("Error", "No se pudo guardar el post", "error");
-			}
-		} catch (err) {
-			console.error("Error al guardar:", err);
-			Swal.fire("Error", "No se pudo conectar con el servidor", "error");
-		}
+	if (titulo.trim() === "" || contenido.trim() === "") {
+		Swal.fire("Error", "El título y contenido no pueden estar vacíos", "error");
+		return;
 	}
+
+	
+	const formData = new FormData();
+	formData.append("usuario", user);
+	formData.append("fotoUser", fotoUsuario);
+	formData.append("titulo", titulo);
+	formData.append("post", contenido);
+	if (foto) formData.append("foto", foto);
+
+	
+	const formDataProxy = new FormData();
+	formDataProxy.append("url", "posts/altaPost.php");
+	formDataProxy.append("method", "POST");
+
+	
+	for (let [key, value] of formData.entries()) {
+		formDataProxy.append(key, value);
+	}
+
+	try {
+		const res = await axios.post("/api/proxy", formDataProxy, {
+			headers: { "Content-Type": "multipart/form-data" }
+		});
+
+		if (res.data === "success") {
+			Swal.fire("Muy bien", "Tu post fue guardado", "success");
+			goto("/");
+		} else {
+			Swal.fire("Error", "No se pudo guardar el post", "error");
+		}
+
+	} catch (err) {
+		console.error("Error al guardar:", err);
+		Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+	}
+}
 </script>
 
 <Menu />
