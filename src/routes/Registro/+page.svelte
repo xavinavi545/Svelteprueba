@@ -11,7 +11,6 @@
   let email = '';
   let show = false;
 
-  // Función para registrarse
   async function registrarse() {
     if (pass !== pass2) {
       Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
