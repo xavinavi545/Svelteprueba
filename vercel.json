@@ -1,44 +1,14 @@
 {
   "rewrites": [
-    {
-      "source": "/api/login/registro",
-      "destination": "http://98.92.120.34/login/registro.php"
-    },
-    {
-      "source": "/api/login/validarEmail",
-      "destination": "http://98.92.120.34/login/validarEmail.php"
-    },
-    {
-      "source": "/api/login/login",
-      "destination": "http://98.92.120.34/login/login.php"
-    },
-    {
-      "source": "/api/login/salir",
-      "destination": "http://98.92.120.34/login/salir.php"
-    },
-    {
-      "source": "/api/posts/alta",
-      "destination": "http://98.92.120.34/posts/altaPost.php"
-    },
-    {
-      "source": "/api/posts/listar",
-      "destination": "http://98.92.120.34/posts/posts.php"
-    },
-    {
-      "source": "/api/posts/post",
-      "destination": "http://98.92.120.34/posts/post.php"
-    },
-    {
-      "source": "/api/posts/editar",
-      "destination": "http://98.92.120.34/posts/editarPost.php"
-    },
-    {
-      "source": "/api/posts/eliminar",
-      "destination": "http://98.92.120.34/posts/eliminar.php"
-    },
-    {
-      "source": "/foto_perfil/:path*",
-      "destination": "http://98.92.120.34/login/foto_perfil/:path*"
-    }
+    { "source": "/api/registro", "destination": "http://98.92.120.34/login/registro.php" },
+    { "source": "/api/validarEmail", "destination": "http://98.92.120.34/login/validarEmail.php" },
+    { "source": "/api/login", "destination": "http://98.92.120.34/login/login.php" },
+    { "source": "/api/salir", "destination": "http://98.92.120.34/login/salir.php" },
+    { "source": "/api/posts/alta", "destination": "http://98.92.120.34/posts/altaPost.php" },
+    { "source": "/api/posts/listar", "destination": "http://98.92.120.34/posts/posts.php" },
+    { "source": "/api/posts/post", "destination": "http://98.92.120.34/posts/post.php" },
+    { "source": "/api/posts/editar", "destination": "http://98.92.120.34/posts/editarPost.php" },
+    { "source": "/api/posts/eliminar", "destination": "http://98.92.120.34/posts/eliminar.php" },
+    { "source": "/foto_perfil/:path*", "destination": "http://98.92.120.34/login/foto_perfil/:path*" }
   ]
 }

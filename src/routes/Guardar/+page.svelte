@@ -1,11 +1,11 @@
 <script>
-  import axios from 'axios';
-  import sesion from '../../sesion';
-  import InputCustom from '../../componentes/InputCustom.svelte';
   import Menu from '../../componentes/Menu.svelte';
+  import InputCustom from '../../componentes/InputCustom.svelte';
+  import axios from 'axios';
   import Swal from 'sweetalert2';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import sesion from '../../sesion';
 
   let user = '';
   let fotoUsuario = '';
@@ -43,7 +43,7 @@
 
       if (res.data === 'success') {
         Swal.fire('Muy bien', 'Tu post fue guardado', 'success');
-        goto('/');
+        goto('/Inicio');
       } else {
         Swal.fire('Error', 'No se pudo guardar el post', 'error');
       }
@@ -58,7 +58,6 @@
 
 <div class="container">
   <h1>Guardar</h1>
-
   <form on:submit|preventDefault={guardar} id="formGuardar" autocomplete="off">
     <input type="hidden" name="usuario" bind:value={user} />
     <input type="hidden" name="fotoUser" bind:value={fotoUsuario} />

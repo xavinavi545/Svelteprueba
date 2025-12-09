@@ -11,7 +11,8 @@
   let email = '';
   let show = false;
 
-  function registrarse() {
+  // Función para registrarse
+  async function registrarse() {
     if (pass !== pass2) {
       Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
       return;
@@ -19,38 +20,36 @@
 
     const form = document.getElementById('registroForm');
 
-    axios.post('/api/registro', new FormData(form), {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-    .then(res => {
+    try {
+      const res = await axios.post('/api/registro', Object.fromEntries(new FormData(form)));
+
       if (res.data === 'success') {
         Swal.fire('Correcto', 'Registrado correctamente', 'success');
         goto('/');
       } else {
         Swal.fire('Error', 'Falló el registro', 'error');
       }
-    })
-    .catch(err => {
+    } catch (err) {
       console.error('Error al registrar:', err);
       Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
-    });
+    }
   }
 
-  function validarEmail() {
+  
+  async function validarEmail() {
     if (email.trim() === '') return;
 
-    axios.post('/api/validarEmail', { email })
-      .then(res => {
-        if (res.data === 'success') {
-          show = true;
-        } else {
-          show = false;
-          Swal.fire('Error', 'El correo ya existe', 'error');
-        }
-      })
-      .catch(err => {
-        console.error('Error al validar email:', err);
-      });
+    try {
+      const res = await axios.post('/api/validarEmail', { email });
+      if (res.data === 'success') {
+        show = true;
+      } else {
+        show = false;
+        Swal.fire('Error', 'El correo ya existe', 'error');
+      }
+    } catch (err) {
+      console.error('Error al validar email:', err);
+    }
   }
 </script>
 
@@ -77,3 +76,8 @@
     <a href="/" class="btn blue">Login</a>
   </form>
 </div>
+
+<style>
+  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+  .input-field { margin-bottom: 20px; }
+</style>

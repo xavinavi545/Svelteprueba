@@ -1,14 +1,17 @@
 <script>
-  import Menu from '../componentes/Menu.svelte';
-  import InputCustom from '../componentes/InputCustom.svelte';
+  import Menu from '../../componentes/Menu.svelte';
+  import InputCustom from '../../componentes/InputCustom.svelte';
   import axios from 'axios';
   import Swal from 'sweetalert2';
-  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+
+  import { onMount } from 'svelte';
 
   onMount(() => {
     const token = localStorage.getItem('token');
-    if (token) goto('/Inicio');
+    if (token) {
+      goto('/Inicio');
+    }
   });
 
   async function login() {
@@ -35,7 +38,7 @@
 
 <div class="container">
   <h1>Login</h1>
-  <form on:submit|preventDefault={login} id="loginForm" autocomplete="off">
+  <form id="loginForm" on:submit|preventDefault={login} autocomplete="off">
     <InputCustom type="email" id="email" name="email" label="E-mail" icon="account_circle" />
     <InputCustom type="password" id="pass" name="pass" label="Password" icon="https" />
 
@@ -43,3 +46,7 @@
     <a href="/Registro" class="btn blue">Registro</a>
   </form>
 </div>
+
+<style>
+  .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+</style>
